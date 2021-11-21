@@ -52,9 +52,13 @@ public class GornerTabel extends AbstractTableModel {
             case 0:
 
                 return "Значение X";
-            default:
+            case 1:
 
                 return "Значение многочлена";
+            default:
+
+                return "Целая часть чётная";
+
         }
     }
     public Class<?> getColumnClass(int col) {
