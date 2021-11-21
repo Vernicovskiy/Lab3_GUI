@@ -1,9 +1,14 @@
 package bsu.rfe.java.group6.lab3.Vernicovskiy.varA7 ;
 
 import javax.swing.*;
+import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 
 public class Table  extends JFrame {
 
@@ -17,6 +22,9 @@ public class Table  extends JFrame {
 
     private  GornerTabel data;
     private GornerTableCellRenderer render = new GornerTableCellRenderer ();
+    private JFileChooser file = null;
+
+
     public Table (Double [] coefficients)
     {
         super ("Table");
@@ -27,6 +35,7 @@ public class Table  extends JFrame {
         setLocation( (kit.getScreenSize().width - WIDTH) / 2, (kit.getScreenSize().height - HEIGHT)/2) ;
         Box cont = Box.createVerticalBox();
         getContentPane().add(cont, BorderLayout.NORTH);
+
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         JMenu filename = new JMenu("Файл");
@@ -35,14 +44,87 @@ public class Table  extends JFrame {
         Action information = new AbstractAction("Справка") {
             @Override
             public void actionPerformed(ActionEvent e) {
+                JPanel inf = new JPanel();
+                JLabel fio = new JLabel("Программу реализовал: Верниковский Виктор - 6 группа");
+                inf.add(fio);
+                ImageIcon ic = new ImageIcon("D:\\Study\\Second Course\\Java\\Lab3\\Lab3_GUI\\src\\bsu\\rfe\\java\\group6\\lab3\\Vernicovskiy\\varA7\\Лицо.jpg");
+                Image image = ic.getImage();
+                BufferedImage imgur = new BufferedImage(200, 250, BufferedImage.TYPE_INT_ARGB);
+
+                Graphics g = imgur.createGraphics();
+                g.drawImage(image, 0,0,200,250, null);
+                g.dispose();
+                ic.setImage(imgur);
+                JLabel img = new JLabel(ic);
+                inf.add (img);
+
                 JOptionPane.showMessageDialog(Table.this,
-                        "Прорамму выполнил: Верниковский  Виктор \n Группа: 6", "Справка",
+                        inf, "Справка",
                         JOptionPane.INFORMATION_MESSAGE);
 
             }
         };
+        Action saveToText = new AbstractAction("Сохранить в файл") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (file == null)
+                {
+                    file = new JFileChooser();
+
+                    file.setCurrentDirectory(new File("D:\\Study\\Second Course\\Programming2\\Java\\Lab_rab3\\out\\production"));
+
+                }
+                if (file.showSaveDialog(Table.this) == JFileChooser.APPROVE_OPTION)
+                    saveToTextFile(file.getSelectedFile(), coefficients);
+
+
+
+            }
+        };
+        filename.add (saveToText);
+        saveToText.setEnabled(false);
         menuBar.add(filename);
+        menuBar.add (tabl);
+
         filename.add (information);
+        Action find = new AbstractAction("Найти из диапазона") {
+            @Override
+
+            public void actionPerformed(ActionEvent e) {
+                String str1;
+                try{
+                    str1 = JOptionPane.showInputDialog(Table.this, "Введите промежуток от - до через пробел",
+                            "Поиск из диапазона", JOptionPane.QUESTION_MESSAGE);
+                    String[] str = str1.split(" ");
+
+                    render.setFrom(str[0]);
+                    render.setTo(str[1]);
+                    getContentPane().repaint();
+
+                }
+                catch (NumberFormatException ex)
+                {
+
+                    JOptionPane.showMessageDialog(Table.this, "Ошибка в формате записи числа с плавающей точкой",
+                            "Ошибочный формат числа",  JOptionPane.WARNING_MESSAGE);
+
+                }
+            }
+        };
+
+        Action find2 = new AbstractAction("Найти значение") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String str;
+                str = JOptionPane.showInputDialog(Table.this, "Введите значение",
+                        "Поиск из диапазона", JOptionPane.QUESTION_MESSAGE);
+                render.setScan(str);
+                getContentPane().repaint();
+            }
+        };
+        tabl.add(find);
+        tabl.add(find2);
+tabl.setEnabled(false);
         JLabel Label_From = new JLabel("х изменяется от: " );
         JLabel Label_To = new JLabel(" до ");
         JLabel Label_Shag = new JLabel(" с шагом ");
@@ -67,14 +149,15 @@ public class Table  extends JFrame {
         JButton clear = new JButton("Очистить");
         clear.setSize(10,10);
         butt.add (clear);
-        cont.add (butt);
 
+        cont.add (butt);
         cont.setPreferredSize(new Dimension(WIDTH, WIDTH));
+
+
 
         result.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 try {
                     Double from = Double.parseDouble(textField_from.getText());
                     Double to = Double.parseDouble(textField_to.getText());
@@ -87,6 +170,8 @@ public class Table  extends JFrame {
                     Result.removeAll();
                     Result.add(new JScrollPane(table));
                     getContentPane().validate();
+                    saveToText.setEnabled(true);
+                    tabl.setEnabled(true);
                 }
                 catch(NumberFormatException ex) {
                     JOptionPane.showMessageDialog(Table.this,
@@ -95,6 +180,7 @@ public class Table  extends JFrame {
                 }
             }
         });
+
         clear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -103,16 +189,44 @@ public class Table  extends JFrame {
                 textField_shag.setText(" ");
                 textField_to.setText(" ");
                 getContentPane().validate();
+                saveToText.setEnabled(false);
 
             }
         });
 
 
 
+
+
     }
+    protected void saveToTextFile(File selectedFile, Double [] coefficients ) {
+        try {
 
+            PrintStream out = new PrintStream(selectedFile);
 
+            out.println("Результаты табулирования многочлена по схеме Горнера");
+            out.print("Многочлен: ");
+            for (int i=0; i< coefficients.length; i++) {
+                out.print(coefficients[i] + "*X^" +
+                        (coefficients.length-i-1));
+                if (i!=coefficients.length-1)
+                    out.print(" + ");
+            }
+            out.println("");
+            out.println("Интервал от " + data.getFrom() + " до " +
+                    data.getTo() + " с шагом " + data.getStep());
+            out.println("====================================================");
 
+            for (int i = 0; i<data.getRowCount(); i++) {
+                out.println("Значение в точке " + data.getValueAt(i,0)
+                        + " равно " + data.getValueAt(i,1));
+            }
+
+            out.close();
+        } catch (FileNotFoundException e) {
+
+        }
+    }
 
 
 }
