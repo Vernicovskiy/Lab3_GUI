@@ -37,4 +37,7 @@ public class GornerTableCellRenderer implements TableCellRenderer {
         return panel;
 
     }
+    public void setScan(String scan) {
+        this.scan = scan;
+    }
 }

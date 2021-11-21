@@ -38,7 +38,7 @@ public class GornerTabel extends AbstractTableModel {
             while (i <= k)
 
             {
-                result = result * x + (( k -1 ) * Math.pow(-1, (k - 1)));
+                result = result * x + coefficient[ k -1 ];
 
                 k--;
                 y++;
