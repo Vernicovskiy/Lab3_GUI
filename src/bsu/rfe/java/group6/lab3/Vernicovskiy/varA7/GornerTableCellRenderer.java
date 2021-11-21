@@ -8,7 +8,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 
 public class GornerTableCellRenderer implements TableCellRenderer {
-    private JLabel label = new JLabel();
+    private JLabel label = new JLabel(" ");
     private JPanel panel = new JPanel();
     private String scan = null;
     private DecimalFormat formatter =  (DecimalFormat) NumberFormat.getInstance();
@@ -20,7 +20,9 @@ public class GornerTableCellRenderer implements TableCellRenderer {
         DecimalFormatSymbols a = formatter.getDecimalFormatSymbols();
         a.setDecimalSeparator('.');
         formatter.setDecimalFormatSymbols(a);
+        label.setLayout(new FlowLayout(FlowLayout.CENTER));
         panel.add (label);
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
     }
     @Override
