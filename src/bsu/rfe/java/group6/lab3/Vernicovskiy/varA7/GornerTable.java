@@ -40,7 +40,7 @@ public class GornerTabel extends AbstractTableModel {
 
                 int k = coefficient.length - 1;
 
-                while (i <= k) {
+                while (i < k) {
                     result = result * x + this.coefficient[k];
 
                     k--;
@@ -60,7 +60,35 @@ public class GornerTabel extends AbstractTableModel {
                 }
                 return result;
             }
-            default: return 3.0;
+            default: {
+
+                double result1 = 0.0;
+                int i1 = 0;
+
+                int k1 = coefficient.length - 1;
+
+                while (i1 < k1) {
+                    result1 = result1 * x + this.coefficient[k1];
+
+                    k1--;
+
+                }
+                double result = 0.0;
+                int i = coefficient.length - 1;
+
+                int k = 0;
+
+                while (i >= k) {
+                    result = result * x + coefficient[k];
+
+                    k++;
+                }
+                return Math.abs(result - result1);
+
+
+            }
+
+
         }
     }
 

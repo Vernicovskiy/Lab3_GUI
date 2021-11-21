@@ -29,12 +29,23 @@ public class GornerTableCellRenderer implements TableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         String formattedDouble = formatter.format(value);
         label.setText(formattedDouble);
-        if (column==1 && scan!=null && scan.equals(formattedDouble)) {
+        if ((column + row) % 2 == 1)
+        {
+            label.setForeground(Color.WHITE);
+            panel.setBackground(Color.BLACK);
+        }
+        else
+        {
+
+            label.setForeground(Color.black);
+            panel.setBackground(Color.WHITE);
+        }
+
+
+
+        if (column== 1 && scan!=null && scan.equals(formattedDouble)) {
 
             panel.setBackground(Color.RED);
-        } else {
-
-            panel.setBackground(Color.WHITE);
         }
         return panel;
 

@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
 
 public class Table  extends JFrame {
 
-    private  static final int WIDTH = 700;
-    private  static final int HEIGHT = 500;
+    private  static final int WIDTH = 500;
+    private  static final int HEIGHT = 700;
     private Double[] coefficients;
     private JFileChooser fileChooser = null;
     private TextField textField_from = new TextField("", 5);
@@ -23,9 +23,10 @@ public class Table  extends JFrame {
         setSize(WIDTH,HEIGHT);
 
         Toolkit kit = Toolkit.getDefaultToolkit();
+        System.out.println(kit.getScreenSize().height );
         setLocation( (kit.getScreenSize().width - WIDTH) / 2, (kit.getScreenSize().height - HEIGHT)/2) ;
-        Container cont = getContentPane();
-        cont.setLayout(new CardLayout());
+        Box cont = Box.createVerticalBox();
+        getContentPane().add(cont, BorderLayout.NORTH);
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         JMenu filename = new JMenu("Файл");
@@ -63,27 +64,48 @@ public class Table  extends JFrame {
         result.setSize(10,10);
         JPanel butt = new JPanel();
         butt.add (result);
+        JButton clear = new JButton("Очистить");
+        clear.setSize(10,10);
+        butt.add (clear);
         cont.add (butt);
+
+        cont.setPreferredSize(new Dimension(WIDTH, WIDTH));
 
         result.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                Double from = Double.parseDouble(textField_from.getText());
-                Double to = Double.parseDouble(textField_to.getText());
-                Double shag = Double.parseDouble(textField_shag.getText());
+                try {
+                    Double from = Double.parseDouble(textField_from.getText());
+                    Double to = Double.parseDouble(textField_to.getText());
+                    Double shag = Double.parseDouble(textField_shag.getText());
 
-                data = new GornerTabel(from, to, shag, coefficients);
-                JTable table = new JTable(data);
-                table.setDefaultRenderer(Double.class, render);
-                table.setRowHeight(40);
-                Result.removeAll();
-                Result.add (new JScrollPane (table));
-                getContentPane().validate();
-                // Result.setLayout(new FlowLayout(FlowLayout.CENTER));
+                    data = new GornerTabel(from, to, shag, coefficients);
+                    JTable table = new JTable(data);
+                    table.setDefaultRenderer(Double.class, render);
+                    table.setRowHeight(30);
+                    Result.removeAll();
+                    Result.add(new JScrollPane(table));
+                    getContentPane().validate();
+                }
+                catch(NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(Table.this,
+                            "Ошибка в формате записи числа с плавающей точкой", "Ошибочный формат числа",
+                            JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
-    }
+        clear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Result.removeAll();
+                textField_from.setText(" ");
+                textField_shag.setText(" ");
+                textField_to.setText(" ");
+                getContentPane().validate();
+
+            }
+        });
 
 
 
